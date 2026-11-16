@@ -23,4 +23,8 @@ public class UtilityService {
         employeeCounter++;
         return String.format("NV%04d", employeeCounter);
     }
+
+    public String generateEmployeeCode(Long id) {
+        return String.format("NV%04d", id);
+    }
 }

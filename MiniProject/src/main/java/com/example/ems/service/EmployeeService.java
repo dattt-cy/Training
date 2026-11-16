@@ -1,56 +1,59 @@
 package com.example.ems.service;
 
-import com.example.ems.model.Employee;
+import com.example.ems.entity.Employee;
+import com.example.ems.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class EmployeeService {
 
-    private final List<Employee> employees = new ArrayList<>();
-    private Long nextId = 1L;
-
+    private final EmployeeRepository employeeRepository;
     private final UtilityService utilityService;
 
-    public EmployeeService(UtilityService utilityService) {
+    public EmployeeService(EmployeeRepository employeeRepository, UtilityService utilityService) {
+        this.employeeRepository = employeeRepository;
         this.utilityService = utilityService;
-
-        create(new Employee("Nguyễn Văn An", "an@gmail.com", "IT", 15000000.0));
-        create(new Employee("Trần Thị Bình", "binh@gmail.com", "Nhân sự", 12000000.0));
-        create(new Employee("Lê Văn Cường", "cuong@gmail.com", "Kế toán", 13000000.0));
     }
 
-    public List<Employee> findAll() {
-        return employees;
-    }
+    public List<Employee> search(String keyword, Long departmentId) {
+        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
 
-    public List<Employee> findByDepartment(String department) {
-        List<Employee> result = new ArrayList<>();
-        for (Employee e : employees) {
-            if (e.getDepartment().equalsIgnoreCase(department)) {
-                result.add(e);
-            }
+        if (hasKeyword && departmentId != null) {
+            return employeeRepository.findByFullNameContainingIgnoreCaseAndDepartmentId(keyword.trim(), departmentId);
         }
-        return result;
+        if (hasKeyword) {
+            return employeeRepository.findByFullNameContainingIgnoreCase(keyword.trim());
+        }
+        if (departmentId != null) {
+            return employeeRepository.findByDepartmentId(departmentId);
+        }
+        return employeeRepository.findAll();
     }
 
     public Employee findById(Long id) {
-        for (Employee e : employees) {
-            if (e.getId().equals(id)) {
-                return e;
-            }
-        }
-        return null;
+        return employeeRepository.findById(id).orElse(null);
     }
 
-    public synchronized Employee create(Employee employee) {
-        employee.setId(nextId);
-        nextId++;
-        employee.setCode(utilityService.generateEmployeeCode());
+    public Employee create(Employee employee) {
+        employee.setId(null);
         employee.setFullName(utilityService.formatName(employee.getFullName()));
-        employees.add(employee);
-        return employee;
+        Employee saved = employeeRepository.save(employee);
+
+        saved.setCode(utilityService.generateEmployeeCode(saved.getId()));
+        return employeeRepository.save(saved);
+    }
+
+    public Employee update(Employee existing, Employee newData) {
+        existing.setFullName(utilityService.formatName(newData.getFullName()));
+        existing.setEmail(newData.getEmail());
+        existing.setSalary(newData.getSalary());
+        existing.setDepartment(newData.getDepartment());
+        return employeeRepository.save(existing);
+    }
+
+    public void delete(Long id) {
+        employeeRepository.deleteById(id);
     }
 }
