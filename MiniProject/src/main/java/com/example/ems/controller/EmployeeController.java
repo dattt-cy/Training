@@ -1,9 +1,8 @@
 package com.example.ems.controller;
 
-import com.example.ems.entity.Department;
 import com.example.ems.entity.Employee;
-import com.example.ems.service.DepartmentService;
 import com.example.ems.service.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,11 +22,9 @@ import java.util.List;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
-    private final DepartmentService departmentService;
 
-    public EmployeeController(EmployeeService employeeService, DepartmentService departmentService) {
+    public EmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
-        this.departmentService = departmentService;
     }
 
     @GetMapping
@@ -37,58 +34,24 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> getById(@PathVariable Long id) {
-        Employee employee = employeeService.findById(id);
-        if (employee == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(employee);
+    public Employee getById(@PathVariable Long id) {
+        return employeeService.findById(id);
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody Employee employee) {
-        String error = validate(employee);
-        if (error != null) {
-            return ResponseEntity.badRequest().body(error);
-        }
+    public ResponseEntity<Employee> create(@Valid @RequestBody Employee employee) {
         Employee created = employeeService.create(employee);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Employee employee) {
-        Employee existing = employeeService.findById(id);
-        if (existing == null) {
-            return ResponseEntity.notFound().build();
-        }
-        String error = validate(employee);
-        if (error != null) {
-            return ResponseEntity.badRequest().body(error);
-        }
-        return ResponseEntity.ok(employeeService.update(existing, employee));
+    public Employee update(@PathVariable Long id, @Valid @RequestBody Employee employee) {
+        return employeeService.update(id, employee);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (employeeService.findById(id) == null) {
-            return ResponseEntity.notFound().build();
-        }
         employeeService.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private String validate(Employee employee) {
-        if (employee.getFullName() == null || employee.getFullName().trim().isEmpty()) {
-            return "Họ tên không được để trống";
-        }
-        if (employee.getDepartment() == null || employee.getDepartment().getId() == null) {
-            return "Phải chọn phòng ban (department.id)";
-        }
-        Department department = departmentService.findById(employee.getDepartment().getId());
-        if (department == null) {
-            return "Không tìm thấy phòng ban id = " + employee.getDepartment().getId();
-        }
-        employee.setDepartment(department);
-        return null;
     }
 }
