@@ -83,6 +83,44 @@ Body mẫu cho POST / PUT nhân viên:
 }
 ```
 
+## Module 5: Validation & Exception Handling
+
+- Bean Validation trên entity:
+  - `Employee`: `fullName` không rỗng, tối đa 100 ký tự (`@NotBlank`, `@Size`); `email` không rỗng, đúng định dạng (`@Email`);
+    `salary` bắt buộc, không âm (`@NotNull`, `@Min`); `department` bắt buộc (`@NotNull`)
+  - `Department`: `name` không rỗng, tối đa 50 ký tự
+- `@Valid` trên `@RequestBody`:
+  - `EmployeeController`: lỗi validation được `GlobalExceptionHandler` xử lý
+  - `DepartmentController`: dùng thêm `BindingResult` để tự xử lý lỗi ngay trong controller
+- Exception tự định nghĩa: `ResourceNotFoundException` (404), `BadRequestException` (400)
+- `GlobalExceptionHandler` (`@RestControllerAdvice`): mọi lỗi đều trả về cùng một dạng JSON
+
+| Tình huống | Mã lỗi |
+|---|---|
+| Dữ liệu không hợp lệ (tên rỗng, email sai...) | 400, kèm `errors` cho từng trường |
+| JSON sai cú pháp, sai kiểu dữ liệu (`"salary": "abc"`) | 400 |
+| Tham số sai kiểu (`/api/employees/abc`) | 400 |
+| Không tìm thấy nhân viên / phòng ban | 404 |
+| Đường dẫn không tồn tại | 404 |
+| Sai phương thức HTTP | 405 |
+| Lỗi không lường trước | 500 |
+
+Ví dụ lỗi validation:
+
+```json
+{
+  "timestamp": "2026-11-16T16:30:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Dữ liệu không hợp lệ",
+  "path": "/api/employees",
+  "errors": {
+    "fullName": "Họ tên không được để trống",
+    "email": "Email không hợp lệ"
+  }
+}
+```
+
 ## Chạy project
 
 Cần bật MySQL trước (tài khoản cấu hình trong `src/main/resources/application.properties`).

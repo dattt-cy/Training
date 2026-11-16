@@ -8,6 +8,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "employee")
@@ -20,13 +25,20 @@ public class Employee {
     @Column(unique = true)
     private String code;
 
+    @NotBlank(message = "Họ tên không được để trống")
+    @Size(max = 100, message = "Họ tên tối đa 100 ký tự")
     @Column(nullable = false)
     private String fullName;
 
+    @NotBlank(message = "Email không được để trống")
+    @Email(message = "Email không hợp lệ")
     private String email;
 
+    @NotNull(message = "Lương không được để trống")
+    @Min(value = 0, message = "Lương không được âm")
     private Double salary;
 
+    @NotNull(message = "Phải chọn phòng ban")
     @ManyToOne
     @JoinColumn(name = "department_id")
     private Department department;
