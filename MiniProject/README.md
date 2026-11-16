@@ -46,8 +46,46 @@ Body mẫu cho POST:
 ```
 
 Dữ liệu chỉ nằm trong RAM, khởi động lại app sẽ quay về 3 nhân viên mẫu.
+(Từ Module 4, API này được thay bằng phiên bản dùng database.)
+
+## Module 4: Spring Boot + Database (Spring Data JPA)
+
+- Cấu hình MySQL trong `application.properties`. Database `employee_management` và các bảng tự tạo khi chạy app
+- Entity `Department` → bảng `department` (id, name)
+- Entity `Employee` → bảng `employee` (id, code, full_name, email, salary, department_id)
+- Quan hệ nhiều nhân viên thuộc 1 phòng ban: `@ManyToOne` + `@JoinColumn(name = "department_id")`
+- `EmployeeRepository`, `DepartmentRepository` kế thừa `JpaRepository`
+- CRUD nhân viên với database, tìm kiếm theo tên và/hoặc phòng ban
+- `DataInitializer`: tạo 3 phòng ban và 4 nhân viên mẫu nếu database còn trống
+
+| Method | URL | Kết quả |
+|--------|-----|---------|
+| GET | /api/employees | Danh sách nhân viên |
+| GET | /api/employees?keyword=văn | Tìm theo tên |
+| GET | /api/employees?departmentId=1 | Lọc theo phòng ban |
+| GET | /api/employees?keyword=văn&departmentId=1 | Tìm theo tên + phòng ban |
+| GET | /api/employees/1 | 1 nhân viên, không có thì `404` |
+| POST | /api/employees | Thêm nhân viên, trả `201` |
+| PUT | /api/employees/1 | Sửa nhân viên, trả `200` |
+| DELETE | /api/employees/1 | Xóa nhân viên, trả `204` |
+| GET | /api/departments | Danh sách phòng ban |
+| GET | /api/departments/1 | 1 phòng ban |
+| POST | /api/departments | Thêm phòng ban, body `{"name": "Marketing"}` |
+
+Body mẫu cho POST / PUT nhân viên:
+
+```json
+{
+  "fullName": "hoàng văn em",
+  "email": "em@gmail.com",
+  "salary": 14000000,
+  "department": { "id": 1 }
+}
+```
 
 ## Chạy project
+
+Cần bật MySQL trước (tài khoản cấu hình trong `src/main/resources/application.properties`).
 
 ```
 mvnw.cmd spring-boot:run

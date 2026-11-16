@@ -1,22 +1,44 @@
-package com.example.ems.model;
+package com.example.ems.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "employee")
 public class Employee {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true)
     private String code;
+
+    @Column(nullable = false)
     private String fullName;
+
     private String email;
-    private String department;
+
     private Double salary;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
 
     public Employee() {
     }
 
-    public Employee(String fullName, String email, String department, Double salary) {
+    public Employee(String fullName, String email, Double salary, Department department) {
         this.fullName = fullName;
         this.email = email;
-        this.department = department;
         this.salary = salary;
+        this.department = department;
     }
 
     public Long getId() {
@@ -51,19 +73,19 @@ public class Employee {
         this.email = email;
     }
 
-    public String getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(String department) {
-        this.department = department;
-    }
-
     public Double getSalary() {
         return salary;
     }
 
     public void setSalary(Double salary) {
         this.salary = salary;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 }
