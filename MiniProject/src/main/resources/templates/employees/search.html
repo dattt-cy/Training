@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Tìm kiếm nhân viên')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <h3 class="mb-3">Tìm kiếm nhân viên</h3>
+
+    <form th:action="@{/employees/search}" method="get" class="row g-2 mb-4">
+        <div class="col-md-5">
+            <input type="text" name="keyword" th:value="${keyword}" class="form-control"
+                   placeholder="Nhập tên nhân viên...">
+        </div>
+        <div class="col-md-4">
+            <select name="departmentId" class="form-select">
+                <option value="">-- Tất cả phòng ban --</option>
+                <option th:each="d : ${departments}"
+                        th:value="${d.id}"
+                        th:text="${d.name}"
+                        th:selected="${d.id == departmentId}">IT</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+            <a th:href="@{/employees/search}" class="btn btn-secondary">Xóa lọc</a>
+        </div>
+    </form>
+
+    <p>Tìm thấy <b th:text="${#lists.size(employees)}">0</b> nhân viên</p>
+
+    <table th:replace="~{fragments/layout :: employeeTable(${employees})}"></table>
+</div>
+</body>
+</html>
