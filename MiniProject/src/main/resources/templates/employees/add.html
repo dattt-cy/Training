@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Thêm nhân viên')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container" style="max-width: 640px;">
+    <h3 class="mb-3">Thêm nhân viên</h3>
+
+    <form th:action="@{/employees/add}" th:object="${employee}" method="post" novalidate>
+        <div class="mb-3">
+            <label class="form-label">Họ tên *</label>
+            <input type="text" th:field="*{fullName}" class="form-control"
+                   th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid'">
+            <div class="invalid-feedback" th:errors="*{fullName}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Email *</label>
+            <input type="email" th:field="*{email}" class="form-control"
+                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'">
+            <div class="invalid-feedback" th:errors="*{email}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Lương (VNĐ) *</label>
+            <input type="number" th:field="*{salary}" class="form-control"
+                   th:classappend="${#fields.hasErrors('salary')} ? 'is-invalid'">
+            <div class="invalid-feedback" th:errors="*{salary}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Phòng ban *</label>
+            <select th:field="*{department.id}" class="form-select"
+                    th:classappend="${#fields.hasErrors('department')} ? 'is-invalid'">
+                <option value="">-- Chọn phòng ban --</option>
+                <option th:each="d : ${departments}" th:value="${d.id}" th:text="${d.name}">IT</option>
+            </select>
+            <div class="invalid-feedback" th:errors="*{department}"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Lưu</button>
+        <a th:href="@{/employees/list}" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>
+</body>
+</html>

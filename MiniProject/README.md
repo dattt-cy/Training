@@ -121,6 +121,30 @@ Ví dụ lỗi validation:
 }
 ```
 
+## Module 6: Spring Boot Web (MVC + Thymeleaf)
+
+- Thêm `spring-boot-starter-thymeleaf`
+- `EmployeeWebController` (`@Controller`): trả về trang HTML, tách riêng với REST API `/api/employees`
+- Controller gửi dữ liệu sang View qua `Model`, form gắn với đối tượng `Employee` bằng `th:object` + `th:field`
+- Form thêm nhân viên dùng lại validation của Module 5 (`@Valid` + `BindingResult`), lỗi hiện ngay dưới từng ô
+
+| Trang | Chức năng |
+|---|---|
+| http://localhost:8080/employees/list | Danh sách nhân viên từ database |
+| http://localhost:8080/employees/add | Form thêm nhân viên mới |
+| http://localhost:8080/employees/search | Tìm kiếm theo tên và/hoặc phòng ban |
+
+Giao diện nằm trong `src/main/resources/templates/`:
+
+```
+templates/
+├── fragments/layout.html   phần dùng chung: <head>, thanh menu, bảng nhân viên
+└── employees/
+    ├── list.html
+    ├── add.html
+    └── search.html
+```
+
 ## Chạy project
 
 Cần bật MySQL trước (tài khoản cấu hình trong `src/main/resources/application.properties`).
