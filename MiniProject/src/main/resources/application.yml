@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: employee-management
+  profiles:
+    active: dev
+  jpa:
+    open-in-view: false
+
+server:
+  port: 8080
+  servlet:
+    session:
+      tracking-modes: cookie
