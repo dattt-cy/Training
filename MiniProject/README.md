@@ -145,6 +145,39 @@ templates/
     └── search.html
 ```
 
+## Module 7: Logging & Profiles
+
+**Logging (SLF4J + Logback)**
+
+- `EmployeeService` ghi log khi thêm / sửa / xóa nhân viên (`INFO`), khi không tìm thấy nhân viên (`WARN`),
+  khi tìm kiếm (`DEBUG`)
+- `GlobalExceptionHandler` ghi lỗi không lường trước bằng `log.error`
+- `DataInitializer` ghi log khi tạo dữ liệu mẫu
+
+```
+INFO  c.e.ems.service.EmployeeService : Đã thêm nhân viên: id=5, code=NV0005, name='Võ Thị Hoa', department='IT'
+INFO  c.e.ems.service.EmployeeService : Đã xóa nhân viên: id=5, code=NV0005, name='Võ Thị Hoa'
+WARN  c.e.ems.service.EmployeeService : Không tìm thấy nhân viên id=999
+```
+
+**Profiles**
+
+| File | Nội dung |
+|---|---|
+| `application.yml` | Cấu hình dùng chung, mặc định bật profile `dev` |
+| `application-dev.yml` | DB `employee_management`, in câu SQL, log `DEBUG`, tự tạo dữ liệu mẫu |
+| `application-prod.yml` | DB lấy từ biến môi trường, không in SQL, log `INFO`, ghi log ra file `logs/employee-management.log`, không tạo dữ liệu mẫu |
+
+Chạy với profile prod (PowerShell):
+
+```powershell
+$env:DB_PASSWORD = "mat_khau_mysql"
+mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=prod"
+```
+
+Biến môi trường dùng cho prod: `DB_URL` (mặc định DB `employee_management_prod` trên localhost),
+`DB_USERNAME` (mặc định `root`), `DB_PASSWORD` (bắt buộc).
+
 ## Chạy project
 
 Cần bật MySQL trước (tài khoản cấu hình trong `src/main/resources/application.properties`).
