@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head th:fragment="head(title)">
     <meta charset="UTF-8">
@@ -12,11 +13,23 @@
 <nav th:fragment="navbar" class="navbar navbar-expand navbar-dark bg-primary mb-4">
     <div class="container">
         <a class="navbar-brand" th:href="@{/employees/list}">EMS</a>
-        <ul class="navbar-nav">
+        <ul class="navbar-nav me-auto">
             <li class="nav-item"><a class="nav-link" th:href="@{/employees/list}">Danh sách</a></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/employees/add}">Thêm nhân viên</a></li>
+            <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                <a class="nav-link" th:href="@{/employees/add}">Thêm nhân viên</a>
+            </li>
             <li class="nav-item"><a class="nav-link" th:href="@{/employees/search}">Tìm kiếm</a></li>
         </ul>
+        <div sec:authorize="isAuthenticated()" class="d-flex align-items-center">
+            <span class="navbar-text text-white me-3">
+                <b sec:authentication="name">user</b>
+                <span class="badge bg-light text-primary ms-1" sec:authorize="hasRole('ADMIN')">ADMIN</span>
+                <span class="badge bg-light text-primary ms-1" sec:authorize="!hasRole('ADMIN')">USER</span>
+            </span>
+            <form th:action="@{/logout}" method="post" class="d-inline">
+                <button type="submit" class="btn btn-outline-light btn-sm">Đăng xuất</button>
+            </form>
+        </div>
     </div>
 </nav>
 
