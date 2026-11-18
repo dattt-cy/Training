@@ -8,6 +8,15 @@ spring:
       ddl-auto: update
     show-sql: true
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, caches, scheduledtasks
+  endpoint:
+    health:
+      show-details: always
+
 logging:
   level:
     com.example.ems: DEBUG

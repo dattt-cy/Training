@@ -12,4 +12,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     List<Employee> findByDepartmentId(Long departmentId);
 
     List<Employee> findByFullNameContainingIgnoreCaseAndDepartmentId(String fullName, Long departmentId);
+
+    long countByDepartmentId(Long departmentId);
 }

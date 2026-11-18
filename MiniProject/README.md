@@ -178,6 +178,39 @@ mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=prod"
 Biến môi trường dùng cho prod: `DB_URL` (mặc định DB `employee_management_prod` trên localhost),
 `DB_USERNAME` (mặc định `root`), `DB_PASSWORD` (bắt buộc).
 
+## Module 8: Advanced Spring Boot
+
+**Actuator**: theo dõi tình trạng app
+
+| URL | Nội dung | Profile |
+|---|---|---|
+| /actuator/health | App và database có đang chạy không (`UP` / `DOWN`) | dev, prod |
+| /actuator/metrics | Danh sách chỉ số (bộ nhớ, CPU, số request...) | dev, prod |
+| /actuator/metrics/jvm.memory.used | Bộ nhớ JVM đang dùng | dev, prod |
+| /actuator/caches | Các cache đang có | dev |
+| /actuator/scheduledtasks | Các tác vụ chạy định kỳ | dev |
+
+Ở profile dev, `/actuator/health` hiện chi tiết (database, ổ đĩa...); ở prod chỉ hiện `UP` / `DOWN`.
+
+**Caching**: `@EnableCaching` + `@Cacheable`, dùng Caffeine để cache tự hết hạn sau 60 giây
+
+- `GET /api/reports/employees`: báo cáo tổng số nhân viên, số phòng ban, số nhân viên theo từng phòng ban
+- Lần gọi đầu tính từ database, các lần gọi trong vòng 1 phút sau trả kết quả đã lưu
+  (`generatedAt` giữ nguyên, log "Đang tính báo cáo nhân viên từ database" chỉ hiện 1 lần)
+
+```json
+{
+  "totalEmployees": 4,
+  "totalDepartments": 3,
+  "byDepartment": { "IT": 2, "Kế toán": 1, "Nhân sự": 1 },
+  "generatedAt": "2026-11-18T10:00:00"
+}
+```
+
+**Scheduling**: `@EnableScheduling` + `@Scheduled(fixedRate = 30000)`
+
+- `SystemMonitorTask` ghi log `System running` mỗi 30 giây
+
 ## Chạy project
 
 Cần bật MySQL trước (tài khoản cấu hình trong `src/main/resources/application.properties`).
