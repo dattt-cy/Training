@@ -1,9 +1,11 @@
 package com.example.ems.controller;
 
+import com.example.ems.dto.DepartmentStatistic;
 import com.example.ems.entity.Department;
 import com.example.ems.entity.Employee;
 import com.example.ems.service.DepartmentService;
 import com.example.ems.service.EmployeeService;
+import com.example.ems.service.StatisticService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -23,10 +26,34 @@ public class EmployeeWebController {
 
     private final EmployeeService employeeService;
     private final DepartmentService departmentService;
+    private final StatisticService statisticService;
 
-    public EmployeeWebController(EmployeeService employeeService, DepartmentService departmentService) {
+    public EmployeeWebController(EmployeeService employeeService,
+                                 DepartmentService departmentService,
+                                 StatisticService statisticService) {
         this.employeeService = employeeService;
         this.departmentService = departmentService;
+        this.statisticService = statisticService;
+    }
+
+    @GetMapping("/statistics")
+    public String statistics(Model model) {
+        List<DepartmentStatistic> byDepartment = statisticService.getStatisticByDepartment();
+
+        List<String> chartLabels = new ArrayList<>();
+        List<Long> chartData = new ArrayList<>();
+        for (DepartmentStatistic s : byDepartment) {
+            chartLabels.add(s.getDepartmentName());
+            chartData.add(s.getEmployeeCount());
+        }
+
+        model.addAttribute("totalEmployees", statisticService.getTotalEmployees());
+        model.addAttribute("totalDepartments", statisticService.getTotalDepartments());
+        model.addAttribute("averageSalary", statisticService.getAverageSalary());
+        model.addAttribute("byDepartment", byDepartment);
+        model.addAttribute("chartLabels", chartLabels);
+        model.addAttribute("chartData", chartData);
+        return "employees/statistics";
     }
 
     @GetMapping("/list")

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Thống kê nhân viên')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <h3 class="mb-3">Thống kê nhân viên</h3>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <div class="text-muted">Tổng số nhân viên</div>
+                    <div class="display-6 fw-semibold" th:text="${totalEmployees}">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <div class="text-muted">Số phòng ban</div>
+                    <div class="display-6 fw-semibold" th:text="${totalDepartments}">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <div class="text-muted">Lương trung bình (VNĐ)</div>
+                    <div class="display-6 fw-semibold"
+                         th:text="${#numbers.formatDecimal(averageSalary, 0, 'POINT', 0, 'COMMA')}">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">Số nhân viên theo phòng ban</div>
+                <div class="card-body">
+                    <table class="table table-bordered align-middle mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Phòng ban</th>
+                            <th class="text-end">Số nhân viên</th>
+                            <th class="text-end">Tỷ lệ</th>
+                            <th class="text-end">Lương TB (VNĐ)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="s : ${byDepartment}">
+                            <td th:text="${s.departmentName}">IT</td>
+                            <td class="text-end" th:text="${s.employeeCount}">0</td>
+                            <td class="text-end"
+                                th:text="${totalEmployees == 0 ? '0%' : #numbers.formatDecimal(s.employeeCount * 100.0 / totalEmployees, 1, 1) + '%'}">0%</td>
+                            <td class="text-end"
+                                th:text="${#numbers.formatDecimal(s.averageSalary, 0, 'POINT', 0, 'COMMA')}">0</td>
+                        </tr>
+                        </tbody>
+                        <tfoot class="table-light fw-semibold">
+                        <tr>
+                            <td>Tổng</td>
+                            <td class="text-end" th:text="${totalEmployees}">0</td>
+                            <td class="text-end">100%</td>
+                            <td class="text-end"
+                                th:text="${#numbers.formatDecimal(averageSalary, 0, 'POINT', 0, 'COMMA')}">0</td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">Biểu đồ</div>
+                <div class="card-body">
+                    <canvas id="departmentChart" height="220"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script th:inline="javascript">
+    const labels = /*[[${chartLabels}]]*/ [];
+    const data = /*[[${chartData}]]*/ [];
+
+    new Chart(document.getElementById('departmentChart'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{ label: 'Số nhân viên', data: data, backgroundColor: '#0d6efd' }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+    });
+</script>
+</body>
+</html>
