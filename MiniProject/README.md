@@ -211,6 +211,55 @@ Biến môi trường dùng cho prod: `DB_URL` (mặc định DB `employee_manag
 
 - `SystemMonitorTask` ghi log `System running` mỗi 30 giây
 
+## Module 9: Spring Security Basics
+
+- Entity `User` (bảng `users`: username, password mã hóa BCrypt, role `ADMIN` / `USER`)
+- `CustomUserDetailsService`: Spring Security đọc tài khoản từ database
+- Trang web: đăng nhập bằng form (`/login`), đăng ký (`/register`), đăng xuất
+- REST API: đăng nhập trả về JWT; gọi API bằng `Authorization: Bearer <token>` hoặc Basic Authentication
+- Tài khoản mẫu (chỉ tạo ở profile dev): `admin / admin123` (ADMIN), `user / user123` (USER)
+
+**Phân quyền**
+
+| | Chưa đăng nhập | USER | ADMIN |
+|---|:-:|:-:|:-:|
+| `/login`, `/register`, `/api/auth/**`, `/hello`, `/actuator/health` | ✔ | ✔ | ✔ |
+| Xem danh sách, tìm kiếm (trang web và `GET /api/**`) | | ✔ | ✔ |
+| Thêm / sửa / xóa (`/employees/add`, `POST` / `PUT` / `DELETE /api/**`) | | | ✔ |
+| Các endpoint `/actuator/**` khác | | | ✔ |
+
+Chưa đăng nhập: API trả `401`, trang web chuyển về `/login`.
+Không đủ quyền: API trả `403`, trang web hiện trang 403.
+
+**API đăng ký / đăng nhập**
+
+| Method | URL | Body |
+|---|---|---|
+| POST | /api/auth/register | `{"username": "nam", "password": "123456"}` |
+| POST | /api/auth/login | `{"username": "admin", "password": "admin123"}` |
+| GET | /api/auth/me | (gửi kèm token) xem mình là ai |
+
+Kết quả đăng nhập:
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9...",
+  "tokenType": "Bearer",
+  "expiresIn": 3600,
+  "username": "admin",
+  "role": "ADMIN"
+}
+```
+
+Gọi API với token (Postman: tab Authorization → Bearer Token):
+
+```
+GET /api/employees
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+```
+
+Profile prod cần thêm biến môi trường `JWT_SECRET` (chuỗi Base64 dài ít nhất 32 byte).
+
 ## Chạy project
 
 Cần bật MySQL trước (tài khoản cấu hình trong `src/main/resources/application.properties`).
