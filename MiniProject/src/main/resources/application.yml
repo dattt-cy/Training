@@ -5,9 +5,19 @@ spring:
     active: dev
   jpa:
     open-in-view: false
+  cache:
+    cache-names: employeeReport
+    caffeine:
+      spec: expireAfterWrite=60s
 
 server:
   port: 8080
   servlet:
     session:
       tracking-modes: cookie
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
