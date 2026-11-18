@@ -16,6 +16,10 @@ server:
     session:
       tracking-modes: cookie
 
+app:
+  jwt:
+    expiration-ms: 3600000
+
 management:
   endpoints:
     web:

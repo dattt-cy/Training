@@ -2,8 +2,10 @@ package com.example.ems.config;
 
 import com.example.ems.entity.Department;
 import com.example.ems.entity.Employee;
+import com.example.ems.entity.Role;
 import com.example.ems.repository.DepartmentRepository;
 import com.example.ems.service.EmployeeService;
+import com.example.ems.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -18,14 +20,25 @@ public class DataInitializer implements CommandLineRunner {
 
     private final DepartmentRepository departmentRepository;
     private final EmployeeService employeeService;
+    private final UserService userService;
 
-    public DataInitializer(DepartmentRepository departmentRepository, EmployeeService employeeService) {
+    public DataInitializer(DepartmentRepository departmentRepository,
+                           EmployeeService employeeService,
+                           UserService userService) {
         this.departmentRepository = departmentRepository;
         this.employeeService = employeeService;
+        this.userService = userService;
     }
 
     @Override
     public void run(String... args) {
+        if (!userService.existsByUsername("admin")) {
+            userService.createUser("admin", "admin123", Role.ADMIN);
+        }
+        if (!userService.existsByUsername("user")) {
+            userService.createUser("user", "user123", Role.USER);
+        }
+
         if (departmentRepository.count() > 0) {
             log.info("Database đã có dữ liệu, bỏ qua bước tạo dữ liệu mẫu");
             return;

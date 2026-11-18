@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/layout :: head('Danh sách nhân viên')}"></head>
 <body>
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
@@ -7,7 +8,7 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3 class="mb-0">Danh sách nhân viên</h3>
-        <a th:href="@{/employees/add}" class="btn btn-success">+ Thêm nhân viên</a>
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/employees/add}" class="btn btn-success">+ Thêm nhân viên</a>
     </div>
 
     <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>

@@ -8,6 +8,10 @@ spring:
       ddl-auto: update
     show-sql: true
 
+app:
+  jwt:
+    secret: ygGk9yePCUiL9SCqVwULs4nNAarJCOTaPNJQ6ifFikk=
+
 management:
   endpoints:
     web:
